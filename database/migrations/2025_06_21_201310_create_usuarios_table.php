@@ -9,15 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
 {
     Schema::create('usuarios', function (Blueprint $table) {
         $table->id();
         $table->string('nome');
         $table->string('email')->unique();
-        $table->string('tipo'); // aluno, professor, administrador
-        $table->string('curso')->nullable();
-        $table->string('departamento')->nullable();
+        $table->string('senha');
+        $table->enum('tipo', ['aluno', 'professor', 'administrador']);
+        $table->string('curso')->nullable();         // Aluno
+        $table->string('departamento')->nullable();  // Professor
         $table->timestamps();
     });
 }

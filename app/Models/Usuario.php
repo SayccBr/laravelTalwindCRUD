@@ -2,22 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Usuario extends Model
+abstract class Usuario extends Model
 {
-    use HasFactory;
+    protected $table = 'usuarios';  // <--- define tabela única aqui
+    protected $fillable = ['nome', 'email', 'senha', 'tipo', 'curso', 'departamento'];
 
-    protected $table = 'usuarios';
-
-    protected $fillable = [
-        'nome',
-        'email',
-        'tipo',
-        'curso',
-        'departamento',
-    ];
+    abstract public function getPermissao(): string;
 }
+
 
 #Eloquent (ORM do Laravel).
