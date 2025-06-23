@@ -9,6 +9,7 @@ use App\Models\Usuario;
 
 class Professor extends Usuario
 {
+    // Permissão específica para professor
     public function getPermissao(): string
     {
         return 'acesso ao conteúdo e correção';

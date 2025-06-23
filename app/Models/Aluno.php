@@ -9,6 +9,7 @@ use App\Models\Usuario;
 
 class Aluno extends Usuario
 {
+    // Implementa o método abstrato para retornar a permissão do aluno
     public function getPermissao(): string
     {
         return 'acesso limitado ao conteúdo';

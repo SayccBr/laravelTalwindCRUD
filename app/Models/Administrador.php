@@ -9,6 +9,7 @@ use App\Models\Usuario;
 
 class Administrador extends Usuario
 {
+    // Permissão para o administrador (total acesso)
     public function getPermissao(): string
     {
         return 'acesso completo e gerenciamento';
