@@ -14,11 +14,15 @@ use Illuminate\Support\Facades\DB;
 
 class UsuarioController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $usuarios = DB::table('usuarios')->get(); // uso direto para polimorfismo depois
-        return view('usuarios.index', compact('usuarios'));
+    $usuarios = DB::table('usuarios')->get();
+    if ($request->expectsJson()) {
+        return response()->json($usuarios);
     }
+    return view('usuarios.index', compact('usuarios'));
+    }
+
 
     public function store(Request $request)
     {
@@ -33,47 +37,54 @@ class UsuarioController extends Controller
 
         $data['senha'] = bcrypt($data['senha']);
 
-        match ($data['tipo']) {
+        $usuario = match ($data['tipo']) {
             'aluno' => Aluno::create($data),
             'professor' => Professor::create($data),
             'administrador' => Administrador::create($data),
         };
 
-        return redirect()->route('usuarios.index');
+        return response()->json(['mensagem' => 'Usuário cadastrado com sucesso!', 'usuario' => $usuario]);
     }
 
     public function destroy($id)
     {
         DB::table('usuarios')->where('id', $id)->delete();
-        return redirect()->route('usuarios.index');
+        return response()->json(['mensagem' => 'Usuário excluído com sucesso.']);
     }
 
     public function edit($id)
-{
-    $usuario = DB::table('usuarios')->where('id', $id)->first();
-    return view('usuarios.edit', compact('usuario'));
-}
-
-public function update(Request $request, $id)
-{
-    $data = $request->validate([
-        'nome' => 'required',
-        'email' => 'required|email|unique:usuarios,email,' . $id,
-        'senha' => 'nullable',
-        'tipo' => 'required|in:aluno,professor,administrador',
-        'curso' => 'nullable',
-        'departamento' => 'nullable',
-    ]);
-
-    if (!empty($data['senha'])) {
-        $data['senha'] = bcrypt($data['senha']);
-    } else {
-        unset($data['senha']); // não atualizar se for vazio
+    {
+        $usuario = DB::table('usuarios')->where('id', $id)->first();
+        return response()->json($usuario);
     }
 
-    DB::table('usuarios')->where('id', $id)->update($data);
+    public function update(Request $request, $id)
+    {
+        $data = $request->validate([
+            'nome' => 'required',
+            'email' => 'required|email|unique:usuarios,email,' . $id,
+            'senha' => 'nullable',
+            'tipo' => 'required|in:aluno,professor,administrador',
+            'curso' => 'nullable',
+            'departamento' => 'nullable',
+        ]);
 
-    return redirect()->route('usuarios.index')->with('success', 'Usuário atualizado com sucesso.');
+        if (!empty($data['senha'])) {
+            $data['senha'] = bcrypt($data['senha']);
+        } else {
+            unset($data['senha']);
+        }
+
+        DB::table('usuarios')->where('id', $id)->update($data);
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Usuário atualizado com sucesso']);
 }
+    }
 
+    public function lista()
+    {
+        $usuarios = DB::table('usuarios')->get();
+        return response()->json($usuarios);
+    }
 }
